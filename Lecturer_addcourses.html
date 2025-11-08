@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Tourney:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <title>Add Courses</title>
+
+  <style>
+    /* 1. App-like viewport and font change for native feel */
+    :root {
+      --primary-color: #2c3e50;
+      --accent-color: #f1c40f;
+      --background-color: #ecf0f1; /* Lighter, more common app background */
+      --card-background: #ffffff;
+      --shadow-light: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.16);
+      --shadow-medium: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);
+    }
+
+    body {
+      background-color: var(--background-color);
+      color: var(--primary-color);
+      /* Use system fonts first for a native app feel */
+      font-family: 'Poppins', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden; /* Prevent horizontal scroll from any overflow */
+    }
+
+    /* 2. Fixed App Header */
+    header {
+      background-color: var(--primary-color);
+      color: var(--accent-color);
+      padding: 1rem 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: var(--shadow-medium);
+      position: sticky; /* Sticky or fixed header for app feel */
+      top: 0;
+      z-index: 100; /* Ensure it stays on top */
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 1.5rem;
+      font-weight: 600;
+    }
+
+    /* 3. Main Content Container - App Padding */
+    .container {
+      flex: 1;
+      display: flex;
+      flex-direction: column; /* Stack form and list vertically */
+      align-items: center;
+      padding: 1rem; /* Reduced padding for mobile screen real estate */
+      gap: 1.5rem; /* Space between form and list */
+    }
+
+    .form-box, .course-list {
+      background: var(--card-background);
+      padding: 1.5rem; /* Slightly reduced padding */
+      border-radius: 12px; /* Smoother, app-like corners */
+      box-shadow: var(--shadow-light); /* Softer card shadow */
+      width: 100%; /* Take full width on mobile */
+      max-width: 450px; /* Max width for larger screens */
+      text-align: center;
+      box-sizing: border-box; /* Include padding in width calculation */
+    }
+    
+    .course-list {
+        padding: 0; /* Remove padding for list, handle in inner elements */
+        overflow: hidden; /* Contain border-radius */
+    }
+
+    .course-list h2 {
+        text-align: center;
+        color: var(--primary-color);
+        padding: 1rem 0;
+        margin: 0;
+        font-size: 1.3rem;
+        border-bottom: 1px solid #f0f0f0;
+    }
+
+
+    label {
+      display: block;
+      text-align: left;
+      margin-top: 1rem;
+      margin-bottom: 0.25rem; /* Closer to the input */
+      font-weight: 600; /* Bolder label */
+      font-size: 0.9rem;
+    }
+
+    /* 4. Modern Input Styling */
+    input, select {
+      width: 100%;
+      padding: 12px; /* Increased padding */
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      margin-top: 0;
+      outline: none;
+      font-size: 1rem;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    input:focus, select:focus {
+      border-color: var(--accent-color);
+      box-shadow: 0 0 0 3px rgba(241, 196, 15, 0.2); /* Focus glow */
+    }
+
+    /* 5. Modern Button Styling */
+    button[type="submit"] {
+      width: 100%;
+      margin-top: 2rem;
+      background: var(--primary-color);
+      color: var(--accent-color);
+      border: none;
+      padding: 12px;
+      border-radius: 10px; /* Slightly larger radius */
+      font-size: 1.1rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.2s, transform 0.1s;
+      box-shadow: var(--shadow-light);
+    }
+
+    button[type="submit"]:hover {
+      background: #34495e;
+    }
+    
+    button[type="submit"]:active {
+        transform: scale(0.99); /* Press effect */
+    }
+
+    #message {
+      margin-top: 1rem;
+      font-size: 0.9rem;
+      min-height: 20px;
+      font-weight: 600;
+    }
+
+    @keyframes fade {
+      from { opacity: 0; transform: translateY(5px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    /* 6. Table Styling for App Feel */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 0;
+    }
+
+    th, td {
+      padding: 12px 10px;
+      border-bottom: 1px solid #f0f0f0; /* Lighter separator */
+      text-align: left;
+      font-size: 0.9rem;
+    }
+    
+    th {
+        background-color: var(--primary-color);
+        color: var(--accent-color);
+        font-weight: 600;
+        position: sticky; /* Keep header visible when scrolling list */
+        top: 0;
+    }
+    
+    /* Better look for the delete button */
+    .delete-btn {
+      background: #e74c3c;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 8px 10px;
+      cursor: pointer;
+      font-size: 0.8rem;
+      font-weight: 600;
+      transition: background 0.2s;
+    }
+
+    .delete-btn:hover {
+      background: #c0392b;
+    }
+    
+    /* 7. Bottom Navigation Placeholder (App Look) */
+    .bottom-nav {
+      background-color: var(--card-background);
+      border-top: 1px solid #ddd;
+      padding: 0.5rem 0;
+      position: sticky;
+      bottom: 0;
+      width: 100%;
+      box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.05);
+      z-index: 100;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      min-height: 50px; /* Defining a clear height */
+    }
+
+    /* Media query to better define the app container on very large screens */
+    @media (min-width: 900px) {
+        .container {
+            padding: 2rem;
+            flex-direction: row; /* Side-by-side for desktop/tablet */
+            align-items: flex-start; /* Align to the top */
+        }
+
+        .form-box {
+            width: 40%;
+            max-width: 400px;
+        }
+
+        .course-list {
+            width: 60%;
+            max-width: 800px;
+        }
+    }
+    
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1 style="font-family: 'Tourney', cursive;">Add Course</h1>
+    <a href="Lecturer_dashboard.html" style="color:var(--accent-color); text-decoration:none; display: flex; align-items: center;">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+        <path d="M12 3l10 9h-3v9h-6v-6H11v6H5v-9H2z"/>
+      </svg>
+    </a>
+  </header>
+
+  <div class="container">
+    
+    <div class="form-box">
+        <h2 style="color: var(--primary-color); margin-top: 0; font-size: 1.5rem;">Register New Course</h2>
+      <form id="courseForm">
+        <label for="code">Course Code</label>
+        <input type="text" id="code" placeholder="e.g. CSC101" required />
+
+        <label for="title">Course Title</label>
+        <input type="text" id="title" placeholder="e.g. Introduction to Computing" required />
+
+        <label for="department">Department</label>
+        <input type="text" id="department" placeholder="e.g. Computer Science" required />
+
+        <label for="level">Level</label>
+        <select id="level" required>
+          <option value="">-- Select Level --</option>
+          <option value="100">100 Level</option>
+          <option value="200">200 Level</option>
+          <option value="300">300 Level</option>
+          <option value="400">400 Level</option>
+        </select>
+
+        <button type="submit">Add Course</button>
+      </form>
+
+      <p id="message"></p>
+    </div>
+    
+    <div class="course-list">
+      <h2>Registered Courses</h2>
+      <div style="overflow-x: auto;"> <table id="courseTable">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Code</th>
+                <th>Title</th>
+                <th>Level</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="courseTableBody">
+              </tbody>
+          </table>
+      </div>
+    </div>
+
+  </div>
+  
+  <div class="bottom-nav">
+      <span style="color: #95a5a6; font-size: 0.8rem;">App Navigation Area</span>
+  </div>
+
+
+<script>
+  document.addEventListener("DOMContentLoaded", loadCourses);
+
+  // ✅ Handle Add Course form submission
+  document.getElementById("courseForm").addEventListener("submit", function (e) {
+    e.preventDefault();
+
+    const code = document.getElementById("code").value.trim();
+    const title = document.getElementById("title").value.trim();
+    const department = document.getElementById("department").value.trim();
+    const level = document.getElementById("level").value.trim();
+    const message = document.getElementById("message");
+
+    if (code && title && department && level) {
+      let courses = JSON.parse(localStorage.getItem("courses")) || [];
+      
+      // Check for duplicate course code
+      const isDuplicate = courses.some(course => course.code.toUpperCase() === code.toUpperCase());
+      if (isDuplicate) {
+          message.style.color = "#e74c3c";
+          message.style.animation = "fade 0.5s";
+          message.textContent = `🚫 Error: Course code "${code}" already exists.`;
+          return;
+      }
+
+
+      // ✅ Create new course with next sequential ID
+      const course = {
+        id: "C" + String(courses.length + 1).padStart(3, "0"),
+        code,
+        title,
+        department,
+        level
+      };
+
+      courses.push(course);
+      localStorage.setItem("courses", JSON.stringify(courses));
+      window.dispatchEvent(new Event("storage"));
+
+
+      // ✅ Refresh course list
+      loadCourses();
+
+      // ✅ Success message
+      message.style.color = "#27ae60";
+      message.style.animation = "fade 0.5s";
+      message.textContent = `✅ Course "${code}" added successfully!`;
+
+      // ✅ Reset form
+      document.getElementById("courseForm").reset();
+    } else {
+      message.style.color = "#e74c3c";
+      message.style.animation = "fade 0.5s";
+      message.textContent = "⚠️ Please fill in all fields.";
+    }
+  });
+
+  // ✅ Load and display all courses
+  function loadCourses() {
+    const courses = JSON.parse(localStorage.getItem("courses")) || [];
+    const tableBody = document.getElementById("courseTableBody");
+    tableBody.innerHTML = "";
+
+    if (courses.length === 0) {
+      tableBody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding: 1.5rem;">No courses added yet.</td></tr>`;
+      return;
+    }
+
+    courses.forEach((course, index) => {
+      const row = document.createElement("tr");
+      // Removed Department column from row to save mobile space, keeping it in localStorage for data integrity
+      row.innerHTML = `
+        <td>${course.id}</td>
+        <td>${course.code}</td>
+        <td>${course.title}</td>
+        <td>${course.level}</td>
+        <td><button class="delete-btn" onclick="deleteCourse(${index})">Delete</button></td>
+      `;
+      tableBody.appendChild(row);
+    });
+  }
+
+  // ✅ Delete a course and reindex remaining ones
+  function deleteCourse(index) {
+    let courses = JSON.parse(localStorage.getItem("courses")) || [];
+    const deletedCourse = courses[index].code;
+
+    if (confirm(`Are you sure you want to delete course "${deletedCourse}"?`)) {
+      courses.splice(index, 1);
+
+      // ✅ Reindex IDs (so they remain sequential)
+      courses = courses.map((course, i) => ({
+        ...course,
+        id: "C" + String(i + 1).padStart(3, "0")
+      }));
+
+      localStorage.setItem("courses", JSON.stringify(courses));
+      loadCourses();
+
+      const message = document.getElementById("message");
+      message.style.color = "#e74c3c";
+      message.style.animation = "fade 0.5s";
+      message.textContent = `🗑️ Course "${deletedCourse}" deleted successfully!`;
+    }
+  }
+</script>
+
+</body>
+</html>

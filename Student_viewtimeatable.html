@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Tourney:wght@400;600&display=swap" rel="stylesheet">
+  <title>View Timetable</title>
+
+  <style>
+    /* 1. App-like viewport and modern colors */
+    :root {
+      --primary-color: #2c3e50; /* Dark Blue */
+      --accent-color: #f1c40f; /* Yellow */
+      --background-color: #ecf0f1; /* Light Gray */
+      --card-background: #ffffff; /* White */
+      --shadow-medium: 0 4px 8px rgba(0, 0, 0, 0.1);
+      --danger-color: #e74c3c;
+    }
+
+    body {
+      background-color: var(--background-color);
+      color: var(--primary-color);
+      font-family: 'Poppins', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+
+    /* 2. Fixed App Header */
+    header {
+      background-color: var(--primary-color);
+      color: var(--accent-color);
+      padding: 1rem 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    header h1 {
+      font-family: 'Tourney', cursive;
+      margin: 0;
+      font-size: 1.5rem;
+      font-weight: 600;
+    }
+    
+    .home-btn {
+        color: var(--accent-color);
+        text-decoration: none;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+    }
+
+    /* 3. Main Content Container - List & Detail View Wrapper */
+    .container {
+      max-width: 1200px;
+      flex: 1;
+      margin: 1rem auto 4rem auto;
+      background: var(--card-background);
+      padding: 1.5rem;
+      border-radius: 16px;
+      box-shadow: var(--shadow-medium);
+      width: 95%;
+      box-sizing: border-box;
+    }
+
+    h2 {
+      text-align: center;
+      color: var(--primary-color);
+      margin-top: 0;
+      margin-bottom: 1.5rem;
+      font-size: 1.8rem;
+    }
+    
+    h3 {
+        color: var(--primary-color);
+        border-left: 5px solid var(--accent-color);
+        padding-left: 10px;
+        margin-top: 2rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    /* Timetable List Styles */
+    #timetableList {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    
+    .timetable-entry {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px;
+        margin-bottom: 10px;
+        border-radius: 10px;
+        background: #f9f9f9;
+        cursor: pointer;
+        transition: background 0.2s, box-shadow 0.2s;
+        border-left: 5px solid var(--primary-color);
+        font-weight: 600;
+    }
+
+    .timetable-entry:hover {
+        background: #f0f0f0;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    }
+    
+    .entry-info span {
+        display: block;
+        font-weight: 400;
+        font-size: 0.85rem;
+        color: #7f8c8d;
+    }
+    
+    .entry-info .name {
+        font-weight: 600;
+        color: var(--primary-color);
+        font-size: 1rem;
+    }
+    
+    .entry-actions button {
+        background: none;
+        border: none;
+        color: var(--danger-color);
+        padding: 5px;
+        cursor: pointer;
+        font-size: 1.1rem;
+        transition: color 0.2s;
+    }
+    
+    .entry-actions button:hover {
+        color: #c0392b;
+    }
+
+    .no-data {
+      text-align: center;
+      color: var(--danger-color);
+      font-weight: 700;
+      padding: 2rem 0;
+      border: 1px dashed var(--danger-color);
+      border-radius: 10px;
+      margin-top: 1rem;
+      font-size: 1.1rem;
+    }
+
+    /* Table Styling for Detailed View (Hidden initially) */
+    #detailedView {
+        display: none; /* Hide detailed view initially */
+    }
+    
+    .back-btn {
+        background: #3498db;
+        color: white;
+        margin-bottom: 1.5rem;
+        width: auto;
+    }
+    
+    .back-btn:hover {
+        background: #2980b9;
+    }
+    
+    .table-wrapper {
+        overflow-x: auto;
+    }
+    
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 0.5rem;
+      border-radius: 10px;
+      overflow: hidden;
+      min-width: 600px;
+    }
+
+    th, td {
+      border: 1px solid #ddd;
+      padding: 12px 10px;
+      text-align: center;
+      font-size: 0.9rem;
+    }
+
+    th {
+      background-color: var(--primary-color);
+      color: var(--accent-color);
+      font-weight: 600;
+    }
+    
+    /* Action Bar Styling */
+    .actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    button {
+      background: var(--primary-color);
+      color: var(--accent-color);
+      border: none;
+      padding: 12px 20px;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.2s;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      width: 48%; /* Adjust for mobile dual buttons */
+      max-width: 250px;
+    }
+    
+    @media (min-width: 600px) {
+        button {
+            width: auto;
+        }
+    }
+
+    button:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+
+    button.danger {
+      background: var(--danger-color);
+      color: var(--card-background);
+    }
+  </style>
+</head>
+<body onload="loadTimetableList()">
+
+  <header>
+    <h1 style="font-family: 'Tourney', cursive;">Timetable Archive</h1>
+    <a href="Student_dashboard.html" class="home-btn" title="Go Home">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M12 3l10 9h-3v9h-6v-6H11v6H5v-9H2z"/>
+        </svg>
+        
+    </a>
+  </header>
+
+  <div class="container">
+    
+    <div id="listView">
+        <h2>Saved Timetables</h2>
+        <ul id="timetableList">
+            </ul>
+        
+        <p id="noDataList" class="no-data" style="display:none;">
+            ⚠️ No saved timetables found.
+        </p>
+    </div>
+    
+    <div id="detailedView">
+        <button id="backToListBtn" class="back-btn">← Back to List</button>
+        <h2 id="timetableTitle"></h2>
+
+        <div class="actions">
+            <button id="downloadPdfBtn">📥 Download PDF</button>
+            <button id="clearTimetableBtn" class="danger">🗑️ Clear Timetable</button>
+        </div>
+        
+        <div class="table-wrapper">
+            <div id="timetableContainer"></div>
+        </div>
+    </div>
+  </div>
+  
+  <div class="bottom-nav">
+      <span style="color: #95a5a6; font-size: 0.8rem;">Timetable Archive Viewer</span>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+
+  <script>
+    const listView = document.getElementById('listView');
+    const detailedView = document.getElementById('detailedView');
+    const timetableList = document.getElementById('timetableList');
+    const noDataList = document.getElementById('noDataList');
+    const timetableContainer = document.getElementById("timetableContainer");
+    const timetableTitle = document.getElementById("timetableTitle");
+    const downloadPdfBtn = document.getElementById("downloadPdfBtn");
+    const clearTimetableBtn = document.getElementById("clearTimetableBtn");
+    const backToListBtn = document.getElementById("backToListBtn");
+
+    let savedTimetables = [];
+    let currentTimetableId = null; // Track the currently viewed timetable ID
+
+    // --- Core Functions ---
+
+    // ✅ Load and display the list of saved timetables
+    function loadTimetableList() {
+      savedTimetables = JSON.parse(localStorage.getItem("savedTimetables")) || [];
+      timetableList.innerHTML = '';
+      listView.style.display = 'block';
+      detailedView.style.display = 'none';
+
+      if (savedTimetables.length === 0) {
+        noDataList.style.display = 'block';
+        return;
+      }
+
+      noDataList.style.display = 'none';
+      savedTimetables.forEach((tt) => {
+        const listItem = document.createElement('li');
+        listItem.className = 'timetable-entry';
+        listItem.dataset.id = tt.id;
+        
+        listItem.innerHTML = `
+            <div class="entry-info">
+                <span class="name">${tt.name}</span>
+                <span>Created: ${tt.date}</span>
+            </div>
+            <div class="entry-actions">
+                <button title="Delete Timetable" onclick="event.stopPropagation(); deleteTimetable('${tt.id}')">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
+                    </svg>
+                </button>
+            </div>
+        `;
+        
+        // Add click listener to show detail view
+        listItem.addEventListener('click', () => showTimetableDetail(tt.id));
+        timetableList.appendChild(listItem);
+      });
+    }
+
+    // ✅ Switch to detailed view and render the selected timetable
+    function showTimetableDetail(id) {
+        const timetable = savedTimetables.find(t => t.id === id);
+        if (!timetable) return;
+
+        currentTimetableId = id;
+        
+        // Update header and view state
+        timetableTitle.textContent = timetable.name;
+        listView.style.display = 'none';
+        detailedView.style.display = 'block';
+        
+        // Render the tables
+        renderTimetable(timetable.data);
+    }
+    
+    // ✅ Render the actual timetable data (from the selected object's 'data' property)
+    function renderTimetable(timetable) {
+      timetableContainer.innerHTML = "";
+      const dayOrder = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+      
+      const sortedDays = Object.keys(timetable).sort((a, b) => dayOrder.indexOf(a) - dayOrder.indexOf(b));
+
+      for (const day of sortedDays) {
+        const classes = timetable[day] || [];
+        if (classes.length === 0) continue; 
+        
+        let html = `<h3 style="margin-top:2rem;">${day}</h3>`;
+        html += `<table class="day-table" data-day="${day}">
+                  <thead>
+                    <tr>
+                      <th>Time</th>
+                      <th>Course</th>
+                      <th>Lecturer</th>
+                      <th>Room</th>
+                      <th>Group</th>
+                    </tr>
+                  </thead>
+                  <tbody>`;
+
+        classes.forEach(cls => {
+          html += `<tr>
+                    <td>${cls.time}</td>
+                    <td>${cls.course}</td>
+                    <td>${cls.lecturer}</td>
+                    <td>${cls.room}</td>
+                    <td>${cls.group || '-'}</td>
+                   </tr>`;
+        });
+
+        html += `</tbody></table>`;
+        timetableContainer.innerHTML += html;
+      }
+    }
+    
+    // --- Event Handlers ---
+    
+    backToListBtn.addEventListener('click', loadTimetableList);
+
+    clearTimetableBtn.addEventListener("click", () => {
+      if (!currentTimetableId) return;
+
+      const currentTimetable = savedTimetables.find(t => t.id === currentTimetableId);
+      if (!currentTimetable) return;
+
+      if (!confirm(`Are you sure you want to delete the timetable: "${currentTimetable.name}"?`)) return;
+
+      deleteTimetable(currentTimetableId);
+    });
+    
+    // ✅ Delete a timetable by ID and re-save
+    function deleteTimetable(idToDelete) {
+        savedTimetables = savedTimetables.filter(t => t.id !== idToDelete);
+        
+        // Optional: Re-index IDs, though not strictly necessary if IDs are unique timestamps/UUIDs
+        // savedTimetables.forEach((tt, i) => tt.id = `T${i + 1}`);
+
+        localStorage.setItem("savedTimetables", JSON.stringify(savedTimetables));
+
+        // If the deleted one was the current view, go back to list
+        if (currentTimetableId === idToDelete) {
+            currentTimetableId = null;
+            alert(`Timetable "${deletedName}" removed.`);
+            loadTimetableList();
+        } else {
+            // Otherwise, just refresh the list view
+            alert("Timetable removed.");
+            loadTimetableList();
+        }
+    }
+
+
+    // ✅ Download as PDF (Logic adapted to current view)
+    downloadPdfBtn.addEventListener("click", () => {
+        const timetable = savedTimetables.find(t => t.id === currentTimetableId);
+        if (!timetable) return alert("Error: Timetable data not found for export.");
+
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF({ orientation: "l", unit: "pt", format: "a4" });
+
+        doc.setFontSize(20);
+        doc.setFont("helvetica", "bold");
+        doc.text(`Timetable: ${timetable.name}`, 40, 40);
+
+        let y = 70;
+        const dayTables = Array.from(timetableContainer.querySelectorAll("table.day-table"));
+
+        dayTables.forEach((table, idx) => {
+            const day = table.getAttribute("data-day") || `Day ${idx + 1}`;
+            
+            if (y > doc.internal.pageSize.height - 100 && idx > 0) {
+                doc.addPage();
+                y = 40;
+            }
+            
+            doc.setFontSize(14);
+            doc.setFont("helvetica", "bold");
+            doc.text(day, 40, y);
+            y += 18;
+
+            doc.autoTable({
+                html: table,
+                startY: y,
+                theme: "grid",
+                headStyles: { fillColor: [44, 62, 80], textColor: [241, 196, 15] },
+                styles: { font: "helvetica", fontSize: 10, cellPadding: 6 },
+                margin: { left: 40, right: 40 },
+                didDrawPage: (data) => {
+                    y = data.cursor.y + 20; 
+                }
+            });
+        });
+
+        doc.save(`${timetable.name.replace(/\s/g, '_')}_Timetable.pdf`);
+    });
+    
+    // Make deleteTimetable globally accessible
+    window.deleteTimetable = deleteTimetable;
+  </script>
+
+</body>
+</html>

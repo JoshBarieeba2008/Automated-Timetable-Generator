@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Login Selection</title>
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Load Tailwind CSS for modern styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'primary': '#2c3e50', /* Dark Blue/Grey */
+                        'secondary': '#f1c40f', /* Yellow/Gold Accent */
+                        'app-text': '#34495e',
+                    },
+                    borderRadius: {
+                        'xl': '12px', /* Matching the app template's radius */
+                    },
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom styles to ensure the card is perfectly centered and uses the clean Inter font */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f4f6f9; /* Matching the new app background */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+        .login-card {
+            width: 90%;
+            max-width: 440px; /* Slightly wider card */
+            padding: 2.5rem; 
+        }
+        .login-button {
+            /* Common button styles */
+            transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            font-weight: 600;
+        }
+        .login-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Main Centered Container (The "Card") -->
+    <div class="login-card bg-white rounded-2xl shadow-2xl border border-gray-100">
+        
+        <!-- App Header/Title -->
+        <div class="text-center mb-8">
+            <i class="fas fa-calendar-check text-5xl text-primary mb-3"></i>
+            <h1 class="text-3xl font-extrabold text-app-text">
+                Timetable Access
+            </h1>
+        </div>
+        
+        <!-- Description -->
+        <p class="text-center text-base text-gray-500 mb-8 font-medium">
+            Select your role to securely access the automated system dashboard.
+        </p>
+
+        <!-- Buttons Container -->
+        <div class="space-y-4">
+            
+            <!-- 1. Admin Button - Primary Brand Color -->
+            <a href="Admin_login.html">
+            <button 
+                class="login-button w-full py-4 px-4 rounded-xl bg-primary text-white text-lg hover:bg-opacity-90 focus:outline-none focus:ring-4 focus:ring-primary/50">
+                <i class="fas fa-user-shield"></i>
+                Admin Access
+            </button>
+            </a>
+            
+            <!-- 2. Lecturer Button - Neutral with Secondary Accent on Hover -->
+            <button 
+                onclick="window.location.href = 'Lecturer_login.html'" 
+                class="login-button w-full py-4 px-4 rounded-xl bg-gray-100 text-app-text text-lg hover:bg-secondary hover:text-primary focus:outline-none focus:ring-4 focus:ring-secondary/50">
+                <i class="fas fa-chalkboard-teacher"></i>
+                Lecturer Portal
+            </button>
+            
+            <!-- 3. Student Button - Secondary Accent Color (Call to Action) -->
+            <button 
+                onclick="window.location.href = 'Student_login.html'" 
+                class="login-button w-full py-4 px-4 rounded-xl bg-secondary text-primary text-lg font-bold hover:bg-yellow-400 focus:outline-none focus:ring-4 focus:ring-secondary/50">
+                <i class="fas fa-graduation-cap"></i>
+                Student Timetable
+            </button>
+            
+        </div>
+    </div>
+
+</body>
+</html>

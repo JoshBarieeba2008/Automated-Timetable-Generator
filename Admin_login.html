@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="https://fonts.googleapis.com/css2?family=Tourney:wght@600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Texturina:wght@400;600&display=swap" rel="stylesheet">
+  <title>Admin Login</title>
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: { 'primary': '#2c3e50', 'secondary': '#f1c40f', 'app-text': '#34495e' },
+          borderRadius: { 'xl': '12px' },
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* (styles kept same as your provided design) */
+    body { margin: 0; font-family: 'Texturina', serif; background-color: #f8f9fa; color: #333; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; }
+    header { background-color: #2c3e50; color: white; width: 100%; position: absolute; top: 0; left: 0; padding: 15px 30px; box-shadow: 0 2px 8px rgba(0,0,0,0.2); display:flex; align-items:center; justify-content:center; }
+    .back-button { position: absolute; left: 20px; font-size: 18px; font-weight:bold; color:#f1c40f; background:transparent; border:2px solid #f1c40f; border-radius:8px; padding:5px 12px; cursor:pointer; transition:all .3s; }
+    .back-button:hover { background-color:#f1c40f; color:#2c3e50; }
+    header h1 { font-family:'Tourney', cursive; font-size:clamp(24px,5vw,32px); letter-spacing:2px; margin:0; }
+    .login-container { margin-top:100px; width:100%; max-width:400px; background:white; padding:30px; border-radius:12px; box-shadow:0 5px 15px rgba(44,62,80,0.15); }
+    .login-container h2 { color:#2c3e50; text-align:center; margin-bottom:25px; border-bottom:3px solid #f1c40f; display:inline-block; padding-bottom:8px; width:100%; }
+    .form-group { margin-bottom:20px; }
+    .form-group label { display:block; margin-bottom:8px; font-weight:600; color:#333; }
+    .form-group input { width:100%; padding:12px; border:1px solid #ccc; border-radius:8px; font-size:16px; transition:border-color .3s, box-shadow .3s; }
+    .form-group input:focus { border-color:#f1c40f; box-shadow:0 0 0 3px rgba(241,196,15,0.5); outline:none; }
+    #login-btn { width:100%; background:#f1c40f; border:none; padding:12px 20px; border-radius:8px; color:white; font-weight:bold; cursor:pointer; font-size:18px; transition:background-color .3s, transform .2s; box-shadow:0 4px 6px rgba(0,0,0,0.1); }
+    #login-btn:hover { background:#2c3e50; transform:translateY(-2px); }
+    .register-link { text-align:center; margin-top:15px; font-size:16px; }
+    .register-link a { color:#2c3e50; font-weight:600; text-decoration:none; border-bottom:2px solid #f1c40f; transition:color .3s, border-color .3s; }
+    .register-link a:hover { color:#f1c40f; border-color:#2c3e50; }
+    .message-box { display:none; position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); background-color:#2c3e50; color:white; padding:20px; border-radius:10px; box-shadow:0 4px 15px rgba(0,0,0,0.3); z-index:1000; text-align:center; font-weight:600; min-width:250px; }
+    .message-box button { margin-top:10px; background:#f1c40f; border:none; color:#2c3e50; padding:5px 15px; border-radius:5px; cursor:pointer; font-weight:bold; }
+    footer { background-color:#2c3e50; color:white; text-align:center; padding:10px 0; font-size:14px; width:100%; position:fixed; bottom:0; left:0; }
+  </style>
+</head>
+
+<body>
+  <header>
+    <button class="back-button" onclick="goToPage()">Back</button>
+    <h1>Timetable Generator</h1>
+  </header>
+
+  <div class="login-container">
+    <h2><i class="fas fa-user-shield"></i> Admin Login</h2>
+    <form id="login-form">
+      <div class="form-group">
+        <label for="admin-id">Admin ID</label>
+        <input type="text" id="admin-id" name="admin-id" required placeholder="Enter your Admin ID">
+      </div>
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" required placeholder="Enter your password">
+      </div>
+      <button type="submit" id="login-btn">Sign In</button>
+    </form>
+
+    <div class="register-link">
+      <p>Don't have an account? <a href="Admin_register.html">Register here</a></p>
+    </div>
+  </div>
+
+  <footer>
+    <p>&copy; 2025 Automated Timetable Generator | Admin Access</p>
+  </footer>
+
+  <div id="custom-message-box" class="message-box" role="dialog" aria-modal="true">
+    <p id="message-text"></p>
+    <button id="message-ok">OK</button>
+  </div>
+
+  <script>
+    // Show message box
+    function showMessage(text) {
+      const messageBox = document.getElementById('custom-message-box');
+      document.getElementById('message-text').textContent = text;
+      messageBox.style.display = 'block';
+      document.getElementById('message-ok').focus();
+    }
+    document.getElementById('message-ok').addEventListener('click', () => {
+      document.getElementById('custom-message-box').style.display = 'none';
+    });
+
+    // Ensure main timetableData structure exists
+    function ensureTimetableData() {
+      let raw = localStorage.getItem('timetableData');
+      if (!raw) {
+        const defaultData = { admins: [], lecturers: [], students: [], courses: [], rooms: [], timetables: [] };
+        localStorage.setItem('timetableData', JSON.stringify(defaultData));
+        return defaultData;
+      }
+      try {
+        return JSON.parse(raw);
+      } catch (err) {
+        // corrupted data -> reset (avoid silent failure)
+        const defaultData = { admins: [], lecturers: [], students: [], courses: [], rooms: [], timetables: [] };
+        localStorage.setItem('timetableData', JSON.stringify(defaultData));
+        return defaultData;
+      }
+    }
+
+    // Migrate old adminAccounts key (if present) into timetableData.admins
+    function migrateOldAdminAccountsIfAny() {
+      const old = localStorage.getItem('adminAccounts');
+      if (!old) return;
+      try {
+        const oldArray = JSON.parse(old);
+        if (!Array.isArray(oldArray)) return;
+        const data = ensureTimetableData();
+        // Avoid duplicates when migrating
+        oldArray.forEach(oldAdmin => {
+          const exists = data.admins.some(a => a.adminId === oldAdmin.adminId || a.email === oldAdmin.email);
+          if (!exists) data.admins.push(oldAdmin);
+        });
+        localStorage.setItem('timetableData', JSON.stringify(data));
+        // Optionally remove old key to prevent confusion next time
+        localStorage.removeItem('adminAccounts');
+        console.info('Migrated adminAccounts -> timetableData.admins');
+      } catch (err) {
+        console.warn('Migration skipped: invalid adminAccounts data');
+      }
+    }
+
+    // Run migration and ensure structure
+    migrateOldAdminAccountsIfAny();
+    ensureTimetableData();
+
+    // Form submit handler
+    document.getElementById('login-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      const adminId = document.getElementById('admin-id').value.trim();
+      const password = document.getElementById('password').value;
+
+      if (!adminId || !password) {
+        showMessage('Please enter both Admin ID and Password.');
+        return;
+      }
+
+      // Load from timetableData.admins
+      const data = ensureTimetableData();
+      const admins = Array.isArray(data.admins) ? data.admins : [];
+
+      // Find match (exact match on adminId AND password)
+      const foundAdmin = admins.find(a => (a.adminId === adminId || a.email === adminId) && a.password === password);
+
+      if (!foundAdmin) {
+        // Helpful debugging hint: show if no admins exist vs wrong creds
+        if (admins.length === 0) {
+          showMessage('No admin accounts found. Please register first.');
+        } else {
+          showMessage('Invalid Admin ID or Password. Make sure you used the same Admin ID or registered email and password.');
+        }
+        return;
+      }
+
+      // Save simple session and redirect
+      localStorage.setItem('currentAdmin', JSON.stringify({ adminId: foundAdmin.adminId, email: foundAdmin.email, loggedAt: new Date().toISOString() }));
+      showMessage(`Welcome ${foundAdmin.adminId}! Redirecting to dashboard...`);
+      setTimeout(() => {
+        window.location.href = 'Admin_dashboard.html';
+      }, 1000);
+    });
+
+    function goToPage() {
+    window.location.href = "Main_login.html";
+  }
+  </script>
+</body>
+</html>

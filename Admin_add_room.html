@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Tourney:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <title>Add Room</title>
+
+  <style>
+    /* 1. App-like viewport and modern colors */
+    :root {
+      --primary-color: #2c3e50; /* Dark Blue */
+      --accent-color: #f1c40f; /* Yellow */
+      --background-color: #ecf0f1; /* Light Gray */
+      --card-background: #ffffff; /* White */
+      --shadow-light: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.16);
+    }
+
+    body {
+      background-color: var(--background-color);
+      color: var(--primary-color);
+      font-family: 'Poppins', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+
+    /* 2. Fixed App Header */
+    header {
+      background-color: var(--primary-color);
+      color: var(--accent-color);
+      padding: 1rem 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 1.5rem;
+      font-weight: 600;
+    }
+
+    .home-btn {
+      color: var(--accent-color);
+      display: flex;
+      align-items: center;
+      text-decoration: none;
+      transition: opacity 0.2s;
+    }
+
+    /* 3. Main Content Container - Flex layout for form and list */
+    .container {
+      flex: 1;
+      display: flex;
+      flex-direction: column; /* Stack vertically on mobile */
+      align-items: center;
+      padding: 1rem;
+      gap: 1.5rem; /* Space between form and list */
+    }
+
+    .form-box, .room-list {
+      background: var(--card-background);
+      padding: 2rem;
+      border-radius: 16px;
+      box-shadow: var(--shadow-light);
+      width: 100%;
+      max-width: 420px;
+      text-align: center;
+      box-sizing: border-box;
+    }
+    
+    .room-list {
+        padding: 0; /* Adjust padding for list to contain the table */
+        max-width: 800px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .form-box h2, .room-list h2 {
+        margin-top: 0;
+        margin-bottom: 1.5rem;
+        font-size: 1.6rem;
+        color: var(--primary-color);
+        padding: 1.5rem 0;
+        border-bottom: 1px solid #f0f0f0;
+    }
+    
+    .room-list h2 {
+        margin: 0;
+    }
+
+
+    label {
+      display: block;
+      text-align: left;
+      margin-top: 1rem;
+      margin-bottom: 0.25rem;
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      margin-top: 0;
+      outline: none;
+      font-size: 1rem;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    input:focus {
+      border-color: var(--accent-color);
+      box-shadow: 0 0 0 3px rgba(241, 196, 15, 0.2);
+    }
+    
+    button[type="submit"] {
+      width: 100%;
+      margin-top: 2rem;
+      background: var(--primary-color);
+      color: var(--accent-color);
+      border: none;
+      padding: 14px;
+      border-radius: 12px;
+      font-size: 1.1rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.2s, transform 0.1s;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    button[type="submit"]:hover {
+      background: #34495e;
+    }
+    
+    button[type="submit"]:active {
+        transform: scale(0.98);
+    }
+
+    #message {
+      margin-top: 1.5rem;
+      font-size: 1rem;
+      min-height: 20px;
+      font-weight: 600;
+    }
+
+    @keyframes fade {
+      from { opacity: 0; transform: translateY(5px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    /* 4. Table Styling for App Feel */
+    .table-wrapper {
+        overflow-x: auto;
+        padding-bottom: 1rem;
+    }
+    
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 0;
+      min-width: 500px; /* Ensure table is readable on tiny screens */
+    }
+
+    th, td {
+      padding: 12px 10px;
+      border-bottom: 1px solid #f0f0f0;
+      text-align: left;
+      font-size: 0.9rem;
+    }
+    
+    th {
+        background-color: var(--primary-color);
+        color: var(--accent-color);
+        font-weight: 600;
+        position: sticky;
+        top: 0;
+    }
+    
+    .delete-btn {
+      background: #e74c3c;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 6px 10px;
+      cursor: pointer;
+      font-size: 0.8rem;
+      font-weight: 600;
+      transition: background 0.2s;
+    }
+
+    .delete-btn:hover {
+      background: #c0392b;
+    }
+
+    /* 5. Desktop/Tablet Layout (Side-by-side) */
+    @media (min-width: 900px) {
+        .container {
+            flex-direction: row; /* Side-by-side layout */
+            align-items: flex-start;
+            padding: 2rem;
+        }
+
+        .form-box {
+            width: 40%;
+            max-width: 400px;
+            flex-shrink: 0; /* Prevent form from shrinking */
+        }
+
+        .room-list {
+            width: 60%;
+            max-width: none;
+        }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1 style="font-family: 'Tourney', cursive;">Add Room</h1>
+    <a href="Admin_dashboard.html" class="home-btn" title="Go Home">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+        <path d="M12 3l10 9h-3v9h-6v-6H11v6H5v-9H2z"/>
+      </svg>
+    </a>
+  </header>
+
+  <div class="container">
+    
+    <div class="form-box">
+        <h2>Enter New Room Details</h2>
+      <form id="roomForm">
+        <label for="roomName">Room Name</label>
+        <input type="text" id="roomName" placeholder="e.g. Lecture Hall 1" required />
+
+        <label for="capacity">Capacity (Max Students)</label>
+        <input type="number" id="capacity" placeholder="e.g. 100" min="1" required />
+
+        <label for="type">Room Type</label>
+        <input type="text" id="type" placeholder="e.g. Laboratory, Lecture Hall" required />
+
+        <button type="submit">Add Room</button>
+      </form>
+
+      <p id="message"></p>
+    </div>
+    
+    <div class="room-list">
+      <h2>Registered Rooms</h2>
+      <div class="table-wrapper">
+          <table id="roomTable">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Capacity</th>
+                <th>Type</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="roomTableBody">
+              </tbody>
+          </table>
+      </div>
+    </div>
+
+  </div>
+  
+  <div class="bottom-nav">
+      <span style="color: #95a5a6; font-size: 0.8rem;">App Navigation Area</span>
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", loadRooms);
+
+    // ✅ Handle Add Room form submission
+    document.getElementById("roomForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      const roomName = document.getElementById("roomName").value.trim();
+      const capacity = document.getElementById("capacity").value.trim();
+      const type = document.getElementById("type").value.trim();
+      const message = document.getElementById("message");
+
+      if (roomName && capacity && type) {
+        let addedRooms = JSON.parse(localStorage.getItem("addedRooms")) || [];
+
+        // ✅ Check for duplicates
+        const duplicate = addedRooms.find(r => r.roomName.toLowerCase() === roomName.toLowerCase());
+        if (duplicate) {
+          message.style.color = "#e74c3c";
+          message.style.animation = "fade 0.5s";
+          message.textContent = "⚠️ Room with this name already exists!";
+          return;
+        }
+        
+        // Input validation for capacity (must be a positive number)
+        const capNum = parseInt(capacity);
+        if (isNaN(capNum) || capNum <= 0) {
+            message.style.color = "#e74c3c";
+            message.style.animation = "fade 0.5s";
+            message.textContent = "⚠️ Capacity must be a positive number.";
+            return;
+        }
+
+        // ✅ Create a new room object
+        const room = {
+          // Re-indexing on add is simpler than finding the next largest ID
+          id: "R" + String(addedRooms.length + 1).padStart(3, "0"), 
+          roomName,
+          capacity: capNum,
+          type
+        };
+
+        // ✅ Add and save
+        addedRooms.push(room);
+        localStorage.setItem("addedRooms", JSON.stringify(addedRooms));
+
+        // ✅ Refresh room list
+        loadRooms();
+
+        // ✅ Success message
+        message.style.color = "#27ae60";
+        message.style.animation = "fade 0.5s";
+        message.textContent = `✅ Room "${roomName}" added successfully!`;
+
+        // ✅ Reset form
+        document.getElementById("roomForm").reset();
+      } else {
+        message.style.color = "#e74c3c";
+        message.style.animation = "fade 0.5s";
+        message.textContent = "⚠️ Please fill in all fields.";
+      }
+    });
+
+    // ✅ Load and display all rooms
+    function loadRooms() {
+      const addedRooms = JSON.parse(localStorage.getItem("addedRooms")) || [];
+      const tableBody = document.getElementById("roomTableBody");
+      tableBody.innerHTML = "";
+
+      if (addedRooms.length === 0) {
+        tableBody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding: 1.5rem;">No rooms added yet.</td></tr>`;
+        return;
+      }
+
+      addedRooms.forEach((room, index) => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${room.id}</td>
+          <td>${room.roomName}</td>
+          <td>${room.capacity}</td>
+          <td>${room.type}</td>
+          <td><button class="delete-btn" onclick="deleteRoom(${index})">Remove</button></td>
+        `;
+        tableBody.appendChild(row);
+      });
+    }
+    
+    // ✅ Delete a room and reindex remaining ones
+    function deleteRoom(index) {
+      let addedRooms = JSON.parse(localStorage.getItem("addedRooms")) || [];
+      const deletedRoomName = addedRooms[index].roomName;
+
+      if (confirm(`Are you sure you want to remove room "${deletedRoomName}"?`)) {
+        addedRooms.splice(index, 1);
+
+        // ✅ Reindex IDs
+        addedRooms = addedRooms.map((room, i) => ({
+          ...room,
+          id: "R" + String(i + 1).padStart(3, "0")
+        }));
+
+        localStorage.setItem("addedRooms", JSON.stringify(addedRooms));
+        loadRooms(); // Refresh the list
+
+        const message = document.getElementById("message");
+        message.style.color = "#e74c3c";
+        message.style.animation = "fade 0.5s";
+        message.textContent = `🗑️ Room "${deletedRoomName}" removed successfully!`;
+      }
+    }
+    
+    // Make deleteRoom function globally accessible
+    window.deleteRoom = deleteRoom; 
+
+  </script>
+
+</body>
+</html>

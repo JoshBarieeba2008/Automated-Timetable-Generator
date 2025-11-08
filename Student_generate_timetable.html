@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Tourney:wght@400;600&display=swap" rel="stylesheet">
+  <title>Define Class Schedule</title>
+
+  <style>
+    /* 1. App-like viewport and modern colors */
+    :root {
+      --primary-color: #2c3e50;
+      --accent-color: #f1c40f;
+      --background-color: #ecf0f1;
+      --card-background: #ffffff;
+      --shadow-medium: 0 4px 8px rgba(0, 0, 0, 0.1);
+      --input-border: #ddd;
+    }
+
+    body {
+      background-color: var(--background-color);
+      color: var(--primary-color);
+      font-family: 'Poppins', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+
+    /* 2. Fixed App Header */
+    header {
+      background-color: var(--primary-color);
+      color: var(--accent-color);
+      padding: 1rem 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    header h1 {
+      font-family: 'Tourney', cursive;
+      margin: 0;
+      font-size: 1.5rem;
+      font-weight: 600;
+    }
+    
+    .home-btn {
+        color: var(--accent-color);
+        text-decoration: none;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+    }
+
+    /* 3. Main Content Container */
+    .container {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 2rem 1rem;
+    }
+
+    .form-box {
+      background: var(--card-background);
+      padding: 2rem;
+      border-radius: 16px;
+      box-shadow: var(--shadow-medium);
+      width: 100%;
+      max-width: 1200px;
+      text-align: center;
+      box-sizing: border-box;
+    }
+    
+    .form-box h2 {
+        margin-top: 0;
+        margin-bottom: 1.5rem;
+        font-size: 1.8rem;
+        color: var(--primary-color);
+        border-bottom: 1px solid #eee;
+        padding-bottom: 0.5rem;
+    }
+
+    label {
+      display: block;
+      text-align: left;
+      margin-bottom: 0.25rem;
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+
+    input:not([type="checkbox"]), select {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid var(--input-border);
+      border-radius: 6px;
+      outline: none;
+      font-size: 0.9rem;
+      box-sizing: border-box;
+      transition: border-color 0.2s;
+    }
+    
+    input:focus, select:focus {
+      border-color: var(--accent-color);
+      box-shadow: 0 0 0 2px rgba(241, 196, 15, 0.2);
+    }
+    
+    /* Global Settings Grid */
+    .global-settings {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 1px solid #eee;
+        text-align: left;
+    }
+    
+    /* Dynamic Class List Table */
+    .class-list-container {
+        max-width: 100%;
+        overflow-x: auto;
+        margin-bottom: 1rem;
+    }
+
+    .class-list-table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 1000px; /* Ensure readability for many columns */
+    }
+
+    .class-list-table th, .class-list-table td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: center;
+        vertical-align: middle;
+    }
+    
+    .class-list-table th {
+        background-color: #34495e;
+        color: white;
+        font-size: 0.85rem;
+        white-space: nowrap;
+    }
+
+    .class-list-table td select, .class-list-table td input {
+        padding: 4px;
+        font-size: 0.85rem;
+        width: 100%;
+        min-width: 80px;
+    }
+    
+    .class-list-table td.time-col {
+        display: flex;
+        gap: 5px;
+    }
+
+    .class-list-table td button {
+        background: none;
+        border: none;
+        color: #e74c3c;
+        cursor: pointer;
+        padding: 0;
+        font-size: 1.2rem;
+        transition: color 0.2s;
+    }
+    
+    .class-list-table td button:hover {
+        color: #c0392b;
+    }
+    
+    /* Action Buttons */
+    .action-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 0;
+    }
+
+    .action-row button {
+        padding: 10px 20px;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+
+    #addClassBtn {
+        background: #2ecc71;
+        color: white;
+        border: none;
+    }
+    #addClassBtn:hover {
+        background: #27ae60;
+    }
+
+    #generateTimetableBtn {
+        background: var(--primary-color);
+        color: var(--accent-color);
+        border: none;
+        width: 300px;
+    }
+    #generateTimetableBtn:hover {
+        background: #34495e;
+    }
+
+    /* Message Styling */
+    #message {
+      margin-top: 1.5rem;
+      font-size: 1rem;
+      min-height: 20px;
+      font-weight: 600;
+      text-align: center;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .global-settings {
+            grid-template-columns: 1fr;
+        }
+    }
+  </style>
+</head>
+<body onload="loadInitialData()">
+
+  <header>
+    <h1 style="font-family: 'Tourney', cursive;">Define & Generate Schedule</h1>
+    <a href="Student_dashboard.html" class="home-btn" title="Go Home">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M12 3l10 9h-3v9h-6v-6H11v6H5v-9H2z"/>
+        </svg>
+        
+    </a>
+  </header>
+
+  <div class="container">
+    
+    <div class="form-box">
+        <h2>Manual Class Slot Definition</h2>
+      <form id="scheduleForm">
+        
+        <div class="global-settings">
+            
+            <div>
+                <label for="timetableName">Timetable Name</label>
+                <input type="text" id="timetableName" placeholder="E.g., Fall 2025 - Group A" required />
+            </div>
+
+            <div>
+                <label for="startDate">Timetable Start Date</label>
+                <input type="date" id="startDate" required />
+            </div>
+            
+        </div>
+
+        <div class="class-list-container">
+            <table class="class-list-table">
+                <thead>
+                    <tr>
+                        <th style="width: 10%;">Day</th>
+                        <th style="width: 15%;">Time Range</th>
+                        <th style="width: 20%;">Course (Code/Title)</th>
+                        <th style="width: 20%;">Lecturer</th>
+                        <th style="width: 20%;">Room</th>
+                        <th style="width: 10%;">Group</th>
+                        <th style="width: 5%;"></th>
+                    </tr>
+                </thead>
+                <tbody id="classTableBody">
+                    </tbody>
+            </table>
+        </div>
+
+        <div class="action-row">
+            <button type="button" id="addClassBtn">Add Class Slot</button>
+            <button type="submit" id="generateTimetableBtn"> Generate & Save Timetable</button>
+        </div>
+
+      </form>
+
+      <p id="message"></p>
+    </div>
+    
+  </div>
+
+  <script>
+    // --- Global Data Storage ---
+    let allRooms = [];
+    let allLecturers = [];
+    let uniqueCourses = [];
+    let nextRowId = 0; // For unique row identification
+
+    // --- Utility Functions ---
+
+    function generateUniqueId() {
+        return 'T' + Date.now() + Math.floor(Math.random() * 1000);
+    }
+
+    function getCurrentDateTime() {
+        return new Date().toLocaleString('en-US', {
+            year: 'numeric', month: 'short', day: 'numeric',
+            hour: '2-digit', minute: '2-digit', hour12: true
+        });
+    }
+
+    // --- Data Loading and UI Population ---
+    
+    function loadInitialData() {
+        allRooms = JSON.parse(localStorage.getItem("addedRooms")) || [];
+        allLecturers = JSON.parse(localStorage.getItem("addedLecturers")) || [];
+        
+        // Extract all unique courses from all registered lecturers
+        const courseSet = new Set();
+        allLecturers.forEach(l => {
+            if (l.courses && Array.isArray(l.courses)) {
+                l.courses.forEach(c => courseSet.add(c.toUpperCase().trim()));
+            }
+        });
+        uniqueCourses = Array.from(courseSet).sort();
+
+        // Add a default class slot if the table is empty
+        if (document.getElementById('classTableBody').children.length === 0) {
+            addClassSlot();
+        }
+    }
+
+    function getSelectOptions(items, valueKey, displayKey, placeholder) {
+        let options = `<option value="" disabled selected>${placeholder}</option>`;
+        items.forEach(item => {
+            options += `<option value="${item[valueKey]}">${item[displayKey]}</option>`;
+        });
+        return options;
+    }
+    
+    function createClassSlotRow() {
+        const rowId = nextRowId++;
+        const roomOptions = getSelectOptions(allRooms, 'id', 'roomName', 'Select Room');
+        const lecturerOptions = getSelectOptions(allLecturers, 'id', 'name', 'Select Lecturer');
+        const courseOptions = uniqueCourses.map(c => `<option value="${c}">${c}</option>`).join('');
+
+        const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+        const dayOptions = days.map(d => `<option value="${d}">${d}</option>`).join('');
+
+        const newRow = document.createElement('tr');
+        newRow.dataset.id = rowId;
+        newRow.innerHTML = `
+            <td>
+                <select name="day" required>
+                    <option value="" disabled selected>Day</option>
+                    ${dayOptions}
+                </select>
+            </td>
+            <td class="time-col">
+                <input type="time" name="startTime" value="09:00" required>
+                <input type="time" name="endTime" value="11:00" required>
+            </td>
+            <td>
+                <select name="course" required>
+                    <option value="" disabled selected>Course</option>
+                    ${courseOptions}
+                </select>
+            </td>
+            <td>
+                <select name="lecturer" required>
+                    ${lecturerOptions}
+                </select>
+            </td>
+            <td>
+                <select name="room" required>
+                    ${roomOptions}
+                </select>
+            </td>
+            <td>
+                <input type="text" name="group" placeholder="e.g., A" value="A" required>
+            </td>
+            <td>
+                <button type="button" onclick="removeRow(${rowId})" title="Remove Class">
+                    ✖
+                </button>
+            </td>
+        `;
+        return newRow;
+    }
+
+    function addClassSlot() {
+        const tbody = document.getElementById('classTableBody');
+        tbody.appendChild(createClassSlotRow());
+    }
+    
+    function removeRow(id) {
+        const row = document.querySelector(`tr[data-id="${id}"]`);
+        if (row) {
+            row.remove();
+        }
+        // If the last row is removed, add a new empty one to prevent empty state error
+        if (document.getElementById('classTableBody').children.length === 0) {
+            addClassSlot();
+        }
+    }
+
+    document.getElementById('addClassBtn').addEventListener('click', addClassSlot);
+    window.removeRow = removeRow; // Make available globally for inline onclick
+
+    // --- Core Generation Logic ---
+
+    document.getElementById("scheduleForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      const timetableName = document.getElementById("timetableName").value.trim();
+      const startDate = document.getElementById("startDate").value;
+      const message = document.getElementById("message");
+      
+      const definedClasses = [];
+      let isValid = true;
+
+      document.querySelectorAll('#classTableBody tr').forEach(row => {
+          const day = row.querySelector('select[name="day"]').value;
+          const startTime = row.querySelector('input[name="startTime"]').value;
+          const endTime = row.querySelector('input[name="endTime"]').value;
+          const course = row.querySelector('select[name="course"]').value;
+          const lecturerId = row.querySelector('select[name="lecturer"]').value;
+          const roomId = row.querySelector('select[name="room"]').value;
+          const group = row.querySelector('input[name="group"]').value.trim();
+
+          // Simple validation check
+          if (!day || !startTime || !endTime || !course || !lecturerId || !roomId || !group || startTime >= endTime) {
+              isValid = false;
+          }
+
+          const lecturerName = allLecturers.find(l => l.id === lecturerId)?.name || 'N/A';
+          const roomName = allRooms.find(r => r.id === roomId)?.roomName || 'N/A';
+          
+          definedClasses.push({
+              day: day,
+              time: `${startTime} - ${endTime}`,
+              course: course,
+              lecturer: lecturerName,
+              room: roomName,
+              group: group
+          });
+      });
+
+      if (!timetableName || !startDate || definedClasses.length === 0) {
+          isValid = false;
+      }
+
+      if (!isValid) {
+          message.style.color = "#e74c3c";
+          message.style.animation = "fade 0.5s";
+          message.textContent = "⚠️ Please fill the timetable name, select a start date, and ensure all class slot fields are correctly filled (including Start Time < End Time).";
+          return;
+      }
+      
+      // --- STEP 1: Process the defined classes into the final timetable structure ---
+      const generatedData = processDefinedClasses(definedClasses);
+      
+      if (!generatedData || Object.keys(generatedData).length === 0) {
+        message.style.color = "#e74c3c";
+        message.style.animation = "fade 0.5s";
+        message.textContent = "❌ Generation failed. Could not process schedule data.";
+        return;
+      }
+
+
+      // --- STEP 2: Package and Save the Timetable ---
+      const newTimetable = {
+          id: generateUniqueId(),
+          name: timetableName,
+          date: getCurrentDateTime(),
+          startDate: startDate, // Save the user-defined start date
+          data: generatedData 
+      };
+
+      let savedTimetables = JSON.parse(localStorage.getItem("savedTimetables")) || [];
+      savedTimetables.push(newTimetable);
+      localStorage.setItem("savedTimetables", JSON.stringify(savedTimetables));
+
+      // --- STEP 3: Success ---
+      message.style.color = "#27ae60";
+      message.style.animation = "fade 0.5s";
+      message.textContent = `✅ Timetable "${timetableName}" generated and saved successfully!`;
+
+      // Clear the form after successful save
+      document.getElementById("scheduleForm").reset();
+      document.getElementById('classTableBody').innerHTML = '';
+      addClassSlot(); // Add one empty slot back
+    });
+
+
+    // ✅ FUNCTION: Processes the flat list of classes into the final {Day: [Classes]} structure
+    function processDefinedClasses(classes) {
+        const timetable = {};
+        
+        // Group classes by day
+        classes.forEach(cls => {
+            const day = cls.day;
+            if (!timetable[day]) {
+                timetable[day] = [];
+            }
+            // Remove the 'day' property as it's now the key
+            const { day: _, ...classDetails } = cls; 
+            timetable[day].push(classDetails);
+        });
+        
+        // Optional: Sort classes within each day by start time (for better display)
+        for (const day in timetable) {
+            timetable[day].sort((a, b) => {
+                const timeA = a.time.split(' - ')[0];
+                const timeB = b.time.split(' - ')[0];
+                return timeA.localeCompare(timeB);
+            });
+        }
+        
+        return timetable;
+    }
+
+  </script>
+
+</body>
+</html>

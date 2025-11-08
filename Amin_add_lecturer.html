@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Tourney:wght@400;600&display=swap" rel="stylesheet">
+  <title>Add Lecturer</title>
+
+  <style>
+    /* 1. App-like viewport and modern colors */
+    :root {
+      --primary-color: #2c3e50; /* Dark Blue */
+      --accent-color: #f1c40f; /* Yellow */
+      --background-color: #ecf0f1; /* Light Gray */
+      --card-background: #ffffff; /* White */
+      --shadow-light: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.16);
+      --shadow-medium: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    body {
+      background-color: var(--background-color);
+      color: var(--primary-color);
+      /* Use system fonts first for a native app feel */
+      font-family: 'Poppins', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+
+    /* 2. Fixed App Header */
+    header {
+      background-color: var(--primary-color);
+      color: var(--accent-color);
+      padding: 1rem 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 1.5rem;
+      font-weight: 700;
+    }
+
+    .home-btn {
+      color: var(--accent-color);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      transition: opacity 0.2s;
+    }
+
+    /* 3. Main Content Container - Flex layout for form and list */
+    .container {
+      flex: 1;
+      display: flex;
+      flex-direction: column; /* Stack vertically on mobile */
+      align-items: center;
+      padding: 1rem;
+      gap: 1.5rem; /* Space between form and list */
+    }
+
+    .form-box, .lecturer-list {
+      background: var(--card-background);
+      padding: 2rem;
+      border-radius: 16px;
+      box-shadow: var(--shadow-light);
+      width: 100%;
+      max-width: 420px;
+      text-align: center;
+      box-sizing: border-box;
+    }
+    
+    .lecturer-list {
+        padding: 0; /* Adjust padding for list to contain the table */
+        max-width: 900px;
+        box-shadow: var(--shadow-medium);
+    }
+
+    .form-box h2, .lecturer-list h2 {
+        margin-top: 0;
+        margin-bottom: 1.5rem;
+        font-size: 1.6rem;
+        color: var(--primary-color);
+        padding: 1.5rem 0;
+        border-bottom: 1px solid #f0f0f0;
+    }
+    
+    .lecturer-list h2 {
+        margin: 0;
+    }
+
+
+    label {
+      display: block;
+      text-align: left;
+      margin-top: 1rem;
+      margin-bottom: 0.25rem;
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 12px; /* Increased padding */
+      border: 1px solid #ddd;
+      border-radius: 10px; /* Smoother corners */
+      margin-top: 0;
+      margin-bottom: 0.5rem; /* Space between course inputs */
+      outline: none;
+      font-size: 1rem;
+      box-sizing: border-box;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    input:focus, select:focus {
+      border-color: var(--accent-color);
+      box-shadow: 0 0 0 3px rgba(241, 196, 15, 0.2);
+    }
+    
+    /* 4. Custom Button Styling */
+    .add-course-btn {
+      background-color: var(--accent-color);
+      color: var(--primary-color);
+      border: none;
+      padding: 8px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 0.5rem;
+      font-weight: 600;
+      transition: background-color 0.2s, transform 0.1s;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      display: inline-block; /* Allow it to wrap nicely */
+      width: auto;
+    }
+
+    .add-course-btn:hover {
+      background-color: #d4ac0d;
+    }
+
+    button[type="submit"] {
+      width: 100%;
+      margin-top: 2rem;
+      background: var(--primary-color);
+      color: var(--accent-color);
+      border: none;
+      padding: 14px;
+      border-radius: 12px;
+      font-size: 1.1rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.2s, transform 0.1s;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    
+    button:active {
+        transform: scale(0.98);
+    }
+
+    /* 5. Message and Animation */
+    #message {
+      margin-top: 1.5rem;
+      font-size: 1rem;
+      min-height: 20px;
+      font-weight: 600;
+    }
+
+    @keyframes fade {
+      from { opacity: 0; transform: translateY(5px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    /* 6. Table Styling */
+    .table-wrapper {
+        overflow-x: auto;
+        padding-bottom: 1rem;
+    }
+    
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 0;
+      min-width: 650px; /* Ensure table is readable on small screens */
+    }
+
+    th, td {
+      padding: 12px 10px;
+      border-bottom: 1px solid #f0f0f0;
+      text-align: left;
+      font-size: 0.9rem;
+    }
+    
+    th {
+        background-color: var(--primary-color);
+        color: var(--accent-color);
+        font-weight: 600;
+        position: sticky;
+        top: 0;
+    }
+    
+    .delete-btn {
+      background: #e74c3c;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 6px 10px;
+      cursor: pointer;
+      font-size: 0.8rem;
+      font-weight: 600;
+      transition: background 0.2s;
+    }
+
+    .delete-btn:hover {
+      background: #c0392b;
+    }
+
+    /* 7. Desktop/Tablet Layout (Side-by-side) */
+    @media (min-width: 900px) {
+        .container {
+            flex-direction: row; /* Side-by-side layout */
+            align-items: flex-start;
+            padding: 2rem;
+        }
+
+        .form-box {
+            width: 40%;
+            max-width: 400px;
+            flex-shrink: 0;
+        }
+
+        .lecturer-list {
+            width: 60%;
+            max-width: none;
+        }
+    }
+  </style>
+</head>
+<body onload="loadLecturers()">
+
+  <header>
+    <h1 style="font-family: 'Tourney', cursive;">Add Lecturer</h1>
+    <a href="Admin_dashboard.html" class="home-btn" title="Go to Dashboard">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+        <path d="M12 3l10 9h-3v9h-6v-6H11v6H5v-9H2z"/>
+      </svg>
+    </a>
+  </header>
+
+  <div class="container">
+    
+    <div class="form-box">
+        <h2>Register New Lecturer</h2>
+      <form id="lecturerForm">
+        <label for="name">Full Name</label>
+        <input type="text" id="name" placeholder="Enter lecturer's full name" required />
+
+        <label for="email">Email</label>
+        <input type="email" id="email" placeholder="Enter email address" required />
+
+        <label for="department">Department</label>
+        <input type="text" id="department" placeholder="Enter department" required />
+
+        <label>Courses Taught</label>
+        <div id="coursesContainer">
+          <input type="text" class="courseInput" placeholder="E.g. CSC101" required />
+        </div>
+        <button type="button" class="add-course-btn" onclick="addCourseField()">+ Add Course</button>
+
+        <button type="submit">Add Lecturer</button>
+      </form>
+
+      <p id="message"></p>
+    </div>
+    
+    <div class="lecturer-list">
+      <h2>Registered Lecturers</h2>
+      <div class="table-wrapper">
+          <table id="lecturerTable">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Department</th>
+                <th>Courses</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="lecturerTableBody">
+              </tbody>
+          </table>
+      </div>
+    </div>
+
+  </div>
+  
+  <div class="bottom-nav">
+      <span style="color: #95a5a6; font-size: 0.8rem;">App Navigation Area</span>
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", loadLecturers);
+
+    // ✅ Add a new course input dynamically
+    function addCourseField() {
+      const container = document.getElementById("coursesContainer");
+      const newInput = document.createElement("input");
+      newInput.type = "text";
+      newInput.className = "courseInput";
+      newInput.placeholder = "E.g. CSC202";
+      newInput.required = true;
+      container.appendChild(newInput);
+    }
+    
+    // ✅ Load and display all lecturers
+    function loadLecturers() {
+      const addedLecturers = JSON.parse(localStorage.getItem("addedLecturers")) || [];
+      const tableBody = document.getElementById("lecturerTableBody");
+      tableBody.innerHTML = "";
+
+      if (addedLecturers.length === 0) {
+        tableBody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding: 1.5rem;">No lecturers added yet.</td></tr>`;
+        return;
+      }
+
+      addedLecturers.forEach((lecturer, index) => {
+        const row = document.createElement("tr");
+        const coursesList = lecturer.courses.join(', '); // Join array of courses for display
+        
+        row.innerHTML = `
+          <td>${lecturer.id}</td>
+          <td>${lecturer.name}</td>
+          <td>${lecturer.email}</td>
+          <td>${lecturer.department}</td>
+          <td>${coursesList}</td>
+          <td><button class="delete-btn" onclick="deleteLecturer(${index})">Remove</button></td>
+        `;
+        tableBody.appendChild(row);
+      });
+    }
+    
+    // ✅ Delete a lecturer and reindex remaining ones
+    function deleteLecturer(index) {
+      let addedLecturers = JSON.parse(localStorage.getItem("addedLecturers")) || [];
+      const deletedName = addedLecturers[index].name;
+
+      if (confirm(`Are you sure you want to remove lecturer "${deletedName}"?`)) {
+        addedLecturers.splice(index, 1);
+
+        // ✅ Reindex IDs (essential for sequential numbering)
+        addedLecturers = addedLecturers.map((lecturer, i) => ({
+          ...lecturer,
+          id: "A" + String(i + 1).padStart(3, "0")
+        }));
+
+        localStorage.setItem("addedLecturers", JSON.stringify(addedLecturers));
+        loadLecturers(); // Refresh the list
+
+        const message = document.getElementById("message");
+        message.style.color = "#e74c3c";
+        message.style.animation = "fade 0.5s";
+        message.textContent = `🗑️ Lecturer "${deletedName}" removed successfully!`;
+      }
+    }
+    
+    // Make deleteLecturer globally accessible
+    window.deleteLecturer = deleteLecturer;
+
+    // ✅ Handle lecturer submission
+    document.getElementById("lecturerForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      const name = document.getElementById("name").value.trim();
+      const email = document.getElementById("email").value.trim();
+      const department = document.getElementById("department").value.trim();
+      const courseInputs = document.querySelectorAll(".courseInput");
+      const courses = Array.from(courseInputs).map(input => input.value.trim().toUpperCase()).filter(Boolean); // Clean and standardize courses
+      const message = document.getElementById("message");
+
+      if (name && email && department && courses.length > 0) {
+        let addedLecturers = JSON.parse(localStorage.getItem("addedLecturers")) || [];
+
+        // ✅ Check for duplicates
+        const duplicate = addedLecturers.find(l => l.email.toLowerCase() === email.toLowerCase());
+        if (duplicate) {
+          message.style.color = "#e74c3c";
+          message.style.animation = "fade 0.5s";
+          message.textContent = "⚠️ Lecturer with this email already exists!";
+          return;
+        }
+
+        // ✅ Create lecturer object
+        const lecturer = {
+          // Temporarily use length for ID, re-indexing happens only on delete for simplicity
+          id: "A" + String(addedLecturers.length + 1).padStart(3, "0"),
+          name,
+          email,
+          department,
+          courses
+        };
+
+        // ✅ Save lecturer
+        addedLecturers.push(lecturer);
+        localStorage.setItem("addedLecturers", JSON.stringify(addedLecturers));
+
+        // ✅ Refresh table
+        loadLecturers();
+
+        // ✅ Success message
+        message.style.color = "#27ae60";
+        message.style.animation = "fade 0.5s";
+        message.textContent = `✅ Lecturer "${name}" added successfully!`;
+
+        // ✅ Reset form
+        document.getElementById("lecturerForm").reset();
+
+        // Reset to one course input only
+        const container = document.getElementById("coursesContainer");
+        container.innerHTML = '<input type="text" class="courseInput" placeholder="E.g. CSC101" required />';
+      } else {
+        message.style.color = "#e74c3c";
+        message.style.animation = "fade 0.5s";
+        message.textContent = "⚠️ Please fill in all fields and add at least one course.";
+      }
+    });
+  </script>
+
+</body>
+</html>
